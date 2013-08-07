@@ -1,6 +1,7 @@
 %\VignetteIndexEntry{OmicCircos vignette}
 %\VignetteKeywords{visualization, circular plot} 
 %\VignettePackage{OmicCircos}
+%\VignetteEngine{knitr::knitr}
 
 %
 % NOTE -- ONLY EDIT THE .Rtex FILE!!!  The .Rtex file is
@@ -52,8 +53,24 @@
 
 \begin{document}
 %\SweaveOpts{eps=false, keep.source=FALSE}
-\SweaveOpts{eps=false, pdf=false, png=FALSE, jpeg=TRUE, keep.source=FALSE}
-\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+if(.Platform$OS.type=="windows")
+{
+    device="pdf"
+} else {
+    device="jpeg"
+}    
+opts_chunk$set(dev=device, tidy=TRUE)
+opts_chunk$set(progress=TRUE, verbose=TRUE)
+@
+
+
+<<include=FALSE>>=
+opts_chunk$set(concordance=TRUE)
+@
+
 
 \lstset{% setup listings 
         language=R,% set programming language 
@@ -412,7 +429,7 @@ circos(R=150, cir=db, W=40, mapping=link.pg.v, type="link.pg", lwd=2, col=colors
 \setkeys{Gin}{width=0.75\textwidth}
 \begin{figure}[htbp]
 \begin{center}
-<<OmicCircos4vignette1, fig=TRUE, echo=FALSE, width=8, height=8>>=
+<<OmicCircos4vignette1, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
 circos(R=400, cir=db, type="chr",  col=colors, print.chr.lab=T, W=4, scale=T);
@@ -513,7 +530,7 @@ circos(R=150, cir=db, W=40, mapping=link.pg.v, type="link.pg", lwd=2, col=colors
 \setkeys{Gin}{width=0.75\textwidth}
 \begin{figure}[htbp]
 \begin{center}
-<<OmicCircos4vignette2, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette2, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
@@ -618,7 +635,7 @@ circos(R=110, cir=db, W=40, mapping=highlight, type="hl", lwd=2);
 \setkeys{Gin}{width=0.75\textwidth}
 \begin{figure}[htbp]
 \begin{center}
-<<OmicCircos4vignette3, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette3, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
 
@@ -722,12 +739,11 @@ circos(R=250, cir="hg18", W=50, mapping=cnv, col.v=4, type="ml3", B=F, col=color
 circos(R=200, cir="hg18", W=50, mapping=gene.exp, col.v=4, type="ml3", B=T, col=colors[3], cutoff=0, scale=T);
 circos(R=140, cir="hg18", W=50, mapping=pvalue, col.v=4, type="l", B=F, col=colors[1], scale=T);
 circos(R=132, cir="hg18", W=50, mapping=TCGA.BC.fus, type="link", lwd=2);
-@
 \end{lstlisting}
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette4, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette4, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
 circos(R=300, type="chr", cir="hg18", print.chr.lab=F, W=4);
@@ -753,12 +769,11 @@ circos(R=310, cir="hg18", W=50, mapping=cnv, col.v=4, type="ml3", B=T, col=color
 circos(R=150, cir="hg18", W=50, mapping=gene.exp, col.v=4, type="ml3", B=T, col=colors[3], cutoff=0, scale=T);
 circos(R=90,  cir="hg18", W=50, mapping=pvalue, col.v=4, type="l", B=F, col=colors[1], scale=T);
 circos(R=82, cir="hg18", W=50, mapping=TCGA.BC.fus, type="link", lwd=2); 
-@
 \end{lstlisting}
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette5, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette5, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
 circos(R=300, type="chr", cir="hg18", col=T, print.chr.lab=F, W=4);
@@ -850,12 +865,11 @@ circos(R=220, cir="hg18", W=80,  mapping=cnv,   col.v=4,   type="ml3", B=F, lwd=
 circos(R=140, cir="hg18", W=80,  mapping=pvalue,  col.v=4,    type="l",   B=T, lwd=1, col=colors[1]);
 circos(R=130, cir="hg18", W=10,  mapping=TCGA.BC.fus, type="link", lwd=2);
 
-@
 \end{lstlisting}
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette6, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette6, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
@@ -983,7 +997,7 @@ legend(-80,460, c("1 Basal", "2 Her2", "3 LumA", "4 LumB", "(center)"), cex=1,
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette7, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette7, echo=FALSE, fig.width=8, fig.height=8>>=
 
 ## PCA is plotting. 
 plot(pca.out$x[,1]*5, pca.out$x[,2]*5, pch=19, col=pca.col, main="",  
@@ -1047,7 +1061,7 @@ points(pca.out$x[,1]*3.6+400, pca.out$x[,2]*3.6+400, pch=19, col=pca.col, cex=2)
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette8, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette8, echo=FALSE, fig.width=8, fig.height=8>>=
 
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
 
@@ -1199,7 +1213,7 @@ circos(R=410, cir="hg18", W=40,  mapping=TCGA.PAM50, type="label", side="out", c
 
 \begin{figure}
 \begin{center}
-<<OmicCircos4vignette9, echo=FALSE, fig=TRUE, width=8, height=8>>=
+<<OmicCircos4vignette9, eval=FALSE, echo=FALSE, fig.width=8, fig.height=8>>=
 par(mar=c(2, 2, 2, 2));
 
 plot(c(1,800), c(1,800), type="n", axes=F, xlab="", ylab="", main="");
@@ -1241,6 +1255,9 @@ circos(R=220, cir="hg18", W=80,  mapping=cnv,      col.v=4,  type="ml3", B=F, lw
 circos(R=140, cir="hg18", W=80,  mapping=pvalue,   col.v=4,  type="l",   B=T, lwd=1, col=colors[1], zoom=zoom);
 circos(R=410, cir="hg18", W=40,  mapping=TCGA.PAM50, type="label", side="out", col="blue", zoom=zoom);
 @
+
+\includegraphics{figure9.jpg}
+
 
 \end{center}
 \caption{}
