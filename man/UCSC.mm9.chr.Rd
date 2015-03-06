@@ -3,10 +3,10 @@
 \alias{UCSC.mm9.chr}
 \docType{data}
 \title{
- mouse mm9 cytogenetics table from UCSC Genome Browser 
+ mouse mm9 segment data.
 }
 \description{
- This data set is the mouse mm9 cytogenetics data by UCSC.
+ Mouse mm9 chromsome size and binding data obtained from UCSC Genome Browser cytogenetics table.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

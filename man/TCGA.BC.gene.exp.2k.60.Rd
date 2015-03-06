@@ -3,10 +3,10 @@
 \alias{TCGA.BC.gene.exp.2k.60}
 \docType{data}
 \title{
- sub gene expression data of TCGA Breast Cancer 
+ TCGA BRCA expression data
 }
 \description{
- This data set is the sub gene expression data of TCGA Breast Cancer.
+ Examples of TCGA Breast Cancer expression data from 500 genes and 60 samples
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

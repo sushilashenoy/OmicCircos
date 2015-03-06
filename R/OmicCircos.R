@@ -1,14 +1,14 @@
 #############################
 ## the main function
 #############################
-library(GenomicRanges);
+require(GenomicRanges);
 
 ## main ##
 circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,  
-    cir="", type="n", col.v=3, B=F, 
-    print.chr.lab=T, col.bar=F, col.bar.po = "topleft", cluster=F, order=NULL,
-    scale=F, cutoff = "n", zoom="", 
-    lwd=1, col=rainbow(10, alpha=0.5)[7], side=""
+    cir="", type="n", col.v=3, B=FALSE, 
+    print.chr.lab=TRUE, col.bar=FALSE, col.bar.po = "topleft", cluster=FALSE, order=NULL,
+    scale=FALSE, cutoff = "n", zoom="", cex=1,
+    lwd=1, col=rainbow(10, alpha=0.8)[7], side=""
   ){
 
   ############################ main #############################
@@ -69,10 +69,10 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       dat.c     <- local(get(load(chrfile)));
     
       dat.c[,1] <- gsub("chr", "", dat.c[,1]);
-
+      
       for (chr.i in c(1:chr.num)){
         chr.s  <- chr.po[chr.i,1];
-
+        
         v1 <- as.numeric(chr.po[chr.i,2]);
         v2 <- as.numeric(chr.po[chr.i,3]);
         v3 <- as.numeric(chr.po[chr.i,6]);
@@ -87,7 +87,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
             col <- colors()[26];
           } else {
             col.v <- gsub("gpos","",dat.v[i,5]);
-            if (col.v >= 50){
+            if (col.v >= 30){
               col <- colors()[300];
             } else {
               col <- colors()[351];
@@ -105,48 +105,122 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
           chr.t <- gsub("chr", "", chr.s);
           draw.text.rt(xc, yc, r+r.j, w.m, chr.t, cex=0.6);
         } 
-        
         if (scale){
           total.num <- as.numeric(chr.po[nrow(chr.po),5]);
           do.scale.cir(xc=xc, yc=yc, the.r=r+10, total.num=total.num, 
-                col="blue", lwd=0.001,
-                V1=v1, V2=v2, V3=v3, V4=v4);
+                       col="blue", lwd=0.001,
+                       V1=v1, V2=v2, V3=v3, V4=v4);
         }
-
+      }
+    } else {
+        if (!is.null(col)){
+          col <- rep(col, nrow(chr.po))[c(1:nrow(chr.po))];    
+        } else {
+          col <- rep("blue", nrow(chr.po));
+        }
+        for (chr.i in c(1:chr.num)){
+          w1 <- as.numeric(chr.po[chr.i,2]);
+          w2 <- as.numeric(chr.po[chr.i,3]);
+          draw.arc.s(xc, yc, r, w1, w2, col=col[chr.i], lwd=4);
+          if (print.chr.lab){
+            w.m <- (w1+w2)/2;
+            r.j <- r/20;
+            chr.t <- gsub("chr", "", chr.po[chr.i,1]);
+            draw.text.rt(xc, yc, r+r.j, w.m, chr.t, cex=0.6);
+          } 
+          
+          if (scale){
+            v1 <- as.numeric(chr.po[chr.i,2]);
+            v2 <- as.numeric(chr.po[chr.i,3]);
+            v3 <- as.numeric(chr.po[chr.i,6]);
+            v4 <- as.numeric(chr.po[chr.i,7]);
+            
+            total.num <- as.numeric(chr.po[nrow(chr.po),5]);
+            do.scale.cir(xc=xc, yc=yc, the.r=r+10, total.num=total.num, 
+                         col="blue", lwd=0.001,
+                         V1=v1, V2=v2, V3=v3, V4=v4);
+          }
        }
-     } else {
-       for (chr.i in c(1:chr.num)){
-         w1 <- as.numeric(chr.po[chr.i,2]);
-         w2 <- as.numeric(chr.po[chr.i,3]);
-         draw.arc.s(xc, yc, r, w1, w2, col=col[chr.i], lwd=4);
-         if (print.chr.lab){
-           w.m <- (w1+w2)/2;
-           r.j <- r/20;
-           chr.t <- gsub("chr", "", chr.po[chr.i,1]);
-           draw.text.rt(xc, yc, r+r.j, w.m, chr.t, cex=0.6);
-         } 
-
-         if (scale){
-          v1 <- as.numeric(chr.po[chr.i,2]);
-          v2 <- as.numeric(chr.po[chr.i,3]);
-          v3 <- as.numeric(chr.po[chr.i,6]);
-          v4 <- as.numeric(chr.po[chr.i,7]);
-
-          total.num <- as.numeric(chr.po[nrow(chr.po),5]);
-          do.scale.cir(xc=xc, yc=yc, the.r=r+10, total.num=total.num, 
-                col="blue", lwd=0.001,
-                V1=v1, V2=v2, V3=v3, V4=v4);
-         }
-       }
-     }
+    } 
   }
   ### end chr ###
 
+  ### type = chr2
+  if (type == "chr2"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    chr.lw <- W;
+    ##
+    if (!is.null(col)){
+      cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i <- 0;
+    }
+    ## 
+    if (!is.null(cex)){
+      cexes <- rep(cex, nrow(dat.in))[c(1:nrow(dat.in))];    
+      cex.i <- 0;
+    }
+    dat.c     <- mapping;
+    dat.c[,1] <- gsub("chr", "", dat.c[,1]);
+    chr.num   <- nrow(chr.po);
+    for (chr.i in c(1:chr.num)){
+      chr.s  <- chr.po[chr.i,1];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      dat.v <- subset(dat.c, dat.c[,1]==chr.s);
+      dat.v <- dat.v[order(as.numeric(dat.v[,2])),];
+      for (i in 1:nrow(dat.v)){  
+        if (dat.v[i,5]=="gneg"){
+          col <- colors()[351];
+        } else if (dat.v[i,5]=="acen" | dat.v[i,5]=="gvar" | dat.v[i,5]=="stalk"){
+          col <- colors()[26];
+        } else {
+          col.v <- gsub("gpos","",dat.v[i,5]);
+          if (col.v >= 30){
+            col <- colors()[300];
+          } else {
+            col <- colors()[351];
+          }
+        }
+        w1 <- scale.v(dat.v[i,2], v1, v2, v3, v4);
+        w2 <- scale.v(dat.v[i,3], v1, v2, v3, v4);
+        draw.arc.s(xc, yc, r, w1, w2, col=col, lwd=chr.lw);
+      }
+      if (print.chr.lab){
+        v1  <- as.numeric(chr.po[chr.i,2]);
+        v2  <- as.numeric(chr.po[chr.i,3]);
+        w.m <- (v1+v2)/2;
+        r.j <- r/20;
+        chr.t <- gsub("chr", "", chr.s);
+        draw.text.rt(xc, yc, r+r.j, w.m, chr.t, cex=0.6);
+      } 
+      if (scale){
+        total.num <- as.numeric(chr.po[nrow(chr.po),5]);
+        do.scale.cir(xc=xc, yc=yc, the.r=r+10, total.num=total.num, 
+                     col="blue", lwd=0.001,
+                     V1=v1, V2=v2, V3=v3, V4=v4);
+      }
+    }
+  }
+  ### end chr2 ####
+  
   ### type  ################
-  ### l, s, h, b, ls, lh ###
-  if (type == "l" | type == "s" | type == "h" | type == "b" 
-      | type == "ls" | type == "lh"
-     ){
+  ### l, h, ls, lh ###
+  if (type == "l" | type == "h" | type == "ls" | type == "lh" ){
     if (class(mapping)[1] == "GRanges"){
       po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
       dat.in   <- cbind(as.character(seqnames(mapping)),
@@ -159,6 +233,17 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     dat.in[dat.in[,1]==23,1] <- "X";
     dat.in[dat.in[,1]==24,1] <- "Y";
 
+    ##
+    if (!is.null(col)){
+      cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i <- 0;
+    }
+    ## 
+    if (!is.null(cex)){
+      cexes <- rep(cex, nrow(dat.in))[c(1:nrow(dat.in))];    
+      cex.i <- 0;
+    }
+    
     dat.min <- min(as.numeric(dat.in[,col.v]), na.rm=T);
     dat.max <- max(as.numeric(dat.in[,col.v]), na.rm=T);
     
@@ -194,6 +279,10 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       w.from  <- scale.v(po, v1, v2, v3, v4);
 
       for (i in 2:nrow(dat)){
+        col.i <- col.i + 1;
+        cex.i <- cex.i + 1;
+        col   <- cols[col.i];
+        cex   <- cexes[cex.i];
         my.v  <- as.numeric(dat[i, col.v]);
         if (is.na(my.v)){
            next;
@@ -226,14 +315,6 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
           } 
           v.old <- v;
         }
-
-        if (type=="s"){
-          draw.point.w(xc, yc, v, w.to, col=col, cex=0.2);
-        }
-        
-        if (type=="b"){
-          draw.line(xc, yc, w.to, r, v, col=col, lwd=lwd);
-        }
         
         if (type=="h"){
           tmp.v <- v - r - 1;
@@ -248,8 +329,391 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
   }
-  ### end l, s, h, b, ls, lh ###
+  ### end l, h, ls, lh ###
+  
+  ### type = b, s
+  if (type == "b" | type == "s"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    ##
+    if (!is.null(col)){
+      cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i <- 0;
+    }
+    ## 
+    if (!is.null(cex)){
+      cexes <- rep(cex, nrow(dat.in))[c(1:nrow(dat.in))];    
+      cex.i <- 0;
+    }
+    
+    dat.min <- min(as.numeric(dat.in[,col.v]), na.rm=T);
+    dat.max <- max(as.numeric(dat.in[,col.v]), na.rm=T);
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+      
+      # if the chromosome has not dat.
+      if (dim(dat)[1] == 0){
+        next;
+      }   
+      
+      my.R1 <- R + W/5;
+      my.R2 <- R + W - W/5;
 
+      for (i in 1:nrow(dat)){
+        col.i <- col.i + 1;
+        cex.i <- cex.i + 1;
+        col   <- cols[col.i];
+        cex   <- cexes[cex.i];
+        my.v  <- as.numeric(dat[i, col.v]);
+        if (is.na(my.v)){
+          next;
+        } 
+        my.R1 <- R + W/5;
+        my.R2 <- R + W - W/5;
+        
+        v     <- scale.v(my.v, my.R1, my.R2, dat.min, dat.max);
+        po    <- as.numeric(dat[i,2]);
+        w.to  <- scale.v(po, v1, v2, v3, v4);
+        if (type=="b"){
+          draw.line(xc, yc, w.to, r, v, col=col, lwd=lwd);
+        }
+        if (type=="s"){
+          draw.point.w(xc, yc, v, w.to, col=col, cex=cex);
+        }
+      }
+    }
+    if (scale){
+      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+    }
+    
+  }
+  ### end b, s
+  
+  ### b2
+  if (type == "b2"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    ## colors
+    m.col <- FALSE;
+    if (!is.null(col)){
+      col.l <- length(col);
+      if (col.l==1){
+        cols <- c(col, col);
+      } else if (col.l==2){
+        cols <- col;
+      } else {
+        cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];
+        m.col <- TRUE;
+      }
+    } else {
+      cols <- c("red", "blue");
+    }
+    
+    ## cutoff
+    if (is.numeric(cutoff)){
+      cutoff <- cutoff;
+    } else {
+      cutoff <- 0;
+    }
+
+    dat.min <- min(as.numeric(dat.in[,col.v]), na.rm=T);
+    dat.max <- max(as.numeric(dat.in[,col.v]), na.rm=T);
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+      
+      # if the chromosome has not dat.
+      if (dim(dat)[1] <= 1){
+        next;
+      }   
+      
+      my.R1 <- R + W/5;
+      my.R2 <- R + W - W/5;
+      my.Rm <- (my.R1 + my.R2)/2;
+      
+      for (i in 1:nrow(dat)){
+        my.v  <- as.numeric(dat[i, col.v]);
+        if (m.col){
+          col.i <- col.i + 1;
+          col   <- cols[col.i];
+        } else {
+          if (my.v > cutoff){
+            col <- cols[1];
+          } else {
+            col <- cols[2];
+          }
+        }
+        
+        if (is.na(my.v)){
+          next;
+        } 
+        
+        if (my.v > cutoff){
+          v     <- scale.v(my.v, my.Rm, my.R2, cutoff, dat.max);
+          po    <- as.numeric(dat[i,2]);
+          w.to  <- scale.v(po, v1, v2, v3, v4);
+          draw.line(xc, yc, w.to, my.Rm, v, col=col, lwd=lwd);
+        } else {
+          v     <- scale.v(my.v, my.R1, my.Rm, cutoff, dat.min);
+          po    <- as.numeric(dat[i,2]);
+          w.to  <- scale.v(po, v1, v2, v3, v4);
+          draw.line(xc, yc, w.to, v, my.Rm, col=col, lwd=lwd);
+        }
+      }
+    }
+    if (scale){
+      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+    }
+  }
+  ### end b2
+  
+  ### b3
+  if (type == "b3"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    ## colors
+    col.i <- 0;
+    m.col <- FALSE;
+    if (!is.null(col)){
+        cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];
+    } 
+
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+      
+      # if the chromosome has not dat.
+      if (dim(dat)[1] == 0){
+        next;
+      }   
+      
+      my.R1 <- R + W/10;
+      my.R2 <- R + W - W/5;
+      
+      for (i in 1:nrow(dat)){
+        col.i <- col.i + 1;
+        col   <- cols[col.i];
+        po    <- as.numeric(dat[i, 2]);
+        w.to  <- scale.v(po, v1, v2, v3, v4);
+        draw.line(xc, yc, w.to, my.R1, my.R2, col=col, lwd=lwd);
+      }
+    }
+    if (scale){
+      #do.scale(xc, yc, my.R1, my.R2, R, W-W/5);
+    }
+    
+  }
+  ### end b3
+  
+  ### label2
+  if (type == "label2"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    ## colors
+    col.i <- 0;
+    m.col <- FALSE;
+    if (!is.null(col)){
+      cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];
+    } 
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        #draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        #draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+      
+      # if the chromosome has not dat.
+      if (dim(dat)[1] == 0){
+        next;
+      }   
+      
+      my.R1 <- R + W/10;
+      my.R2 <- R + W - W/5;
+      
+      for (i in 1:nrow(dat)){
+        col.i <- col.i + 1;
+        col   <- cols[col.i];
+        po    <- as.numeric(dat[i, 2]);
+        label.n <- as.character(dat[i, col.v]);
+        w.to  <- scale.v(po, v1, v2, v3, v4);
+        if (side=="in"){
+          draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="in");
+        } else {
+          draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="out");
+        }
+      }
+    }
+    if (scale){
+      #do.scale(xc, yc, my.R1, my.R2, R, W-W/5);
+    }
+  }
+  ### end text
+  
+  ### s2
+  if (type == "s2"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    ## colors
+    col.i <- 0;
+    m.col <- FALSE;
+    if (!is.null(col)){
+      cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];
+    } 
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+      
+      # if the chromosome has not dat.
+      if (dim(dat)[1] == 0){
+        next;
+      }   
+      
+      my.R1 <- R + W/10;
+      my.R2 <- R + W - W/5;
+      my.Rm <- (my.R1 + my.R2)/2;
+      
+      for (i in 1:nrow(dat)){
+        col.i <- col.i + 1;
+        col   <- cols[col.i];
+        po    <- as.numeric(dat[i, 2]);
+        w.to  <- scale.v(po, v1, v2, v3, v4);
+        draw.point.w(xc, yc, my.Rm, w.to, col=col, cex=cex);
+      }
+    }
+    if (scale){
+      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+    }
+    
+  }
+  ### end s2
+  
   ### label
   if (type == "label"){
     if (class(mapping)[1] == "GRanges"){
@@ -262,6 +726,17 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     r <- R;
     w <- W;
 
+    if (!is.null(col)){
+      cols <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i <- 0;
+    }
+    if (!is.null(col)){
+      cexes <- rep(cex, nrow(dat.in))[c(1:nrow(dat.in))];    
+      cex.i <- 0;
+    }
+    
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
     # data set for the chromosome
     for (chr.i in 1:chr.num){
        chr.s <- chr.po[chr.i,1];
@@ -299,6 +774,10 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
 
       for (i in 1:label.num){
+        col.i <- col.i + 1;
+        col   <- cols[col.i];
+        cex.i <- cex.i + 1;
+        cex   <- cexes[col.i];
         label.n <- dat[i,3];
         po      <- as.numeric(dat[i,2]);
         w.to    <- scale.v(po, v1, v2, v3, v4);
@@ -306,12 +785,12 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
            draw.line(xc,  yc, w.to,   r,   r-w/3,          col=col, lwd=lwd);
            draw.line(xc,  yc, w.po,   r-w+w/3, r-w,        col=col, lwd=lwd);
            draw.line3(xc, yc, w.to, w.po, r-w/3, r-w+w/3,  col=col, lwd=lwd);                      
-           draw.text.rt(xc, yc, w.po, r=r-w-40, n=label.n, col=col, cex=0.4, side="in");
+           draw.text.rt(xc, yc, w.po, r=r-w-40, n=label.n, col=col, cex=cex, side="in");
         } else if (side == "out"){
            draw.line(xc,  yc, w.to,   r,  r+w/3,           col=col, lwd=lwd);
            draw.line(xc,  yc, w.po,   r+w-w/3, r+w,        col=col, lwd=lwd);
            draw.line3(xc, yc, w.to, w.po, r+w/3, r+w-w/3,  col=col, lwd=lwd);                      
-           draw.text.rt(xc, yc, w.po, r=r+w+10, n=label.n, col=col, cex=0.4, side="out");
+           draw.text.rt(xc, yc, w.po, r=r+w+10, n=label.n, col=col, cex=cex, side="out");
         }
         w.po <- w.po + v.wide;
       }   
@@ -319,20 +798,29 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
   }
   # end label
 
-  ### translocation
+  ### link
   if (type == "link"){
     chr.po[,4] <- gsub("chr", "", chr.po[,4]);
     dat.in <- mapping;
     dat.in[,1] <- gsub("chr", "", dat.in[,1]);
     dat.in[,4] <- gsub("chr", "", dat.in[,4]);
 
-    dat.in[dat.in[,1]==23,1] <- "X";
-    dat.in[dat.in[,1]==24,1] <- "Y";
-    dat.in[dat.in[,4]==23,1] <- "X";
-    dat.in[dat.in[,4]==24,1] <- "Y";
+    #dat.in[dat.in[,1]==23,1] <- "X";
+    #dat.in[dat.in[,1]==24,1] <- "Y";
+    #dat.in[dat.in[,4]==23,1] <- "X";
+    #dat.in[dat.in[,4]==24,1] <- "Y";
 
     dat    <- dat.in;
 
+    if (!is.null(col)){
+      col <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+    }
+    if (!is.null(lwd)){
+      lwd <- rep(lwd, nrow(dat.in))[c(1:nrow(dat.in))];    
+    } else {
+      lwd <- rep(1, nrow(dat.in));
+    }
+    
     r <- R;
     for (i in 1:nrow(dat)){
       chr1.s   <- dat[i,1];
@@ -358,14 +846,70 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       w2 <- scale.v(as.numeric(po2), v1, v2, v3, v4);
       
       if (chr1 == chr2){
-        draw.link(xc, yc, r, w1, w2, col="#FF000088", lwd=lwd);
+        draw.link(xc, yc, r, w1, w2, col=col[i], lwd=lwd);
       } else {
-        draw.link(xc, yc, r, w1, w2, col="#00FFFF88", lwd=lwd);
+        draw.link(xc, yc, r, w1, w2, col=col[i], lwd=lwd);
       }
     }
   }
-  ### end translocation
+  ### end link
 
+  ### link2
+  if (type == "link2"){
+    chr.po[,4] <- gsub("chr", "", chr.po[,4]);
+    dat.in <- mapping;
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    dat.in[,4] <- gsub("chr", "", dat.in[,4]);
+    
+    #dat.in[dat.in[,1]==23,1] <- "X";
+    #dat.in[dat.in[,1]==24,1] <- "Y";
+    #dat.in[dat.in[,4]==23,1] <- "X";
+    #dat.in[dat.in[,4]==24,1] <- "Y";
+    
+    dat    <- dat.in;
+    
+    if (!is.null(col)){
+      col <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+    }
+    if (!is.null(lwd)){
+      lwd <- rep(lwd, nrow(dat.in))[c(1:nrow(dat.in))];    
+    } else {
+      lwd <- rep(1, nrow(dat.in));
+    }
+    
+    r <- R;
+    for (i in 1:nrow(dat)){
+      chr1.s   <- dat[i,1];
+      chr2.s   <- dat[i,4];
+      po1      <- dat[i,2];
+      po2      <- dat[i,5];
+      
+      chr1     <- which(chr.po[,1]==chr1.s);
+      chr2     <- which(chr.po[,1]==chr2.s);
+      
+      v1 <- as.numeric(chr.po[chr1,2]);
+      v2 <- as.numeric(chr.po[chr1,3]);
+      v3 <- as.numeric(chr.po[chr1,6]);
+      v4 <- as.numeric(chr.po[chr1,7]);
+      
+      w1 <- scale.v(as.numeric(po1), v1, v2, v3, v4);
+      
+      v1 <- as.numeric(chr.po[chr2,2]);
+      v2 <- as.numeric(chr.po[chr2,3]);
+      v3 <- as.numeric(chr.po[chr2,6]);
+      v4 <- as.numeric(chr.po[chr2,7]);
+      
+      w2 <- scale.v(as.numeric(po2), v1, v2, v3, v4);
+      
+      if (chr1 == chr2){
+        draw.link2(xc, yc, r, w1, w2, col=col[i], lwd=lwd);
+      } else {
+        draw.link(xc, yc, r, w1, w2, col=col[i], lwd=lwd);
+      }
+    }
+  }
+  ### end link2
+  
   ### links of sub-segments
 
   if (type=="link.pg"){
@@ -387,12 +931,23 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     dat.in[,1] <- gsub("chr", "", dat.in[,1]);
     dat.in[,4] <- gsub("chr", "", dat.in[,4]);
 
-    dat.in[dat.in[,1]==23,1] <- "X";
-    dat.in[dat.in[,1]==24,1] <- "Y";
+    #dat.in[dat.in[,1]==23,1] <- "X";
+    #dat.in[dat.in[,1]==24,1] <- "Y";
+
+    if (!is.null(col)){
+       col <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+    }
+    
+    if (!is.null(lwd)){
+      lwd <- rep(lwd, nrow(dat.in))[c(1:nrow(dat.in))];    
+    } else {
+      lwd <- rep(1, nrow(dat.in));
+    }
 
     for (i in 1:nrow(dat.in)){
+      the.d1    <- as.numeric(dat.in[i,3])-as.numeric(dat.in[i,2]);
+      the.d2    <- as.numeric(dat.in[i,6])-as.numeric(dat.in[i,5]);
 
-      the.d    <- as.numeric(dat.in[i,3])-as.numeric(dat.in[i,2]);
       #if (the.d < 10000000){
         #next;
       #}
@@ -400,17 +955,25 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       chr1.s    <- dat.in[i,1];
       chr2.s    <- dat.in[i,4];
 
-      cir.i      <- sum(grep("mm", cir));
-      if (cir.i == 1){
-       chr2.s    <- paste("mm.", dat.in[i,4], sep="");
-      } 
-      cir.i      <- sum(grep("mac", cir));
-      if (cir.i == 1){
-       chr2.s    <- paste("mac.", dat.in[i,4], sep="");
+      #cir.i      <- sum(grep("mm", cir));
+      #if (cir.i == 1){
+      # chr2.s    <- paste("mm.", dat.in[i,4], sep="");
+      #} 
+      #cir.i      <- sum(grep("mac", cir));
+      #if (cir.i == 1){
+      # chr2.s    <- paste("mac.", dat.in[i,4], sep="");
+      #}
+      #the.color <- as.character(dat.col[dat.col[,1]==chr1.s,2]);
+      #the.color <- paste(the.color, "50", sep="");
+      if (is.null(col)){
+        if (dat.col[i,1]==chr1.s){
+          the.color <- rainbow(10, alpha=0.8)[7];
+        } else {
+          the.color <- rainbow(10, alpha=0.8)[1];
+        }
+      } else {
+        the.color <- col[i];
       }
-      the.color <- as.character(dat.col[dat.col[,1]==chr1.s,2]);
-      the.color <- paste(the.color, "50", sep="");
-
       po1.1    <- as.numeric(dat.in[i,2]);
       po1.2    <- as.numeric(dat.in[i,3]);
 
@@ -435,13 +998,13 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
 
       w2.1 <- scale.v(po2.1, v1, v2, v3, v4);
       w2.2 <- scale.v(po2.2, v1, v2, v3, v4);
-
+      
       if (po1.1 > po1.2 & po2.2 < po2.1){
-        draw.link.pg(xc, yc, r, w1.2, w1.1, w2.2, w2.1, col=the.color, lwd=1);
+        draw.link.pg(xc, yc, r, w1.2, w1.1, w2.2, w2.1, col=the.color, lwd=lwd[i]);
       } else if (po1.1 < po1.2 & po2.2 > po2.1){
-        draw.link.pg(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=the.color, lwd=1);
+        draw.link.pg(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=the.color, lwd=lwd[i]);
       } else {
-        draw.link.pg(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=the.color, lwd=1);
+        draw.link.pg(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=the.color, lwd=lwd[i]);
       }
     }
   }
@@ -1445,6 +2008,140 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
   }
   ### end ml
 
+  ### arc
+  if (type == "arc"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    if (!is.null(col)){
+      colors <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i  <- 0; 
+    }
+    #
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+      }
+    }
+    ## 
+    my.R1 <- R + W/10;
+    my.R2 <- R + W - W/6;
+    my.Rm <- (my.R1 + my.R2)/2;
+
+    dat.i   <- c(col.v:ncol(dat.in));
+    dat.m   <- dat.in[,dat.i];
+    dat.m   <- as.matrix(dat.m);
+    dat.min <- min(as.numeric(dat.m), na.rm=T);
+    dat.max <- max(as.numeric(dat.m), na.rm=T);
+    
+    for (i in 1:nrow(dat.in)){
+      col.i <- col.i + 1;
+      col   <- colors[col.i];
+      chr.i <- which(chr.po[,1]==dat.in[i,1]);
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      the.r   <- scale.v(as.numeric(dat.in[i,col.v]), my.R1, my.R2, dat.min, dat.max);
+      
+      w1 <- scale.v(as.numeric(dat.in[i,2]), v1, v2, v3, v4);
+      w2 <- scale.v(as.numeric(dat.in[i,3]), v1, v2, v3, v4);
+
+      draw.arc.s(xc, yc, the.r, w1, w2, col=col, lwd=lwd)
+    }
+    
+    if (scale){
+      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+    }
+  }
+  ### end arc
+  
+  ### arc2
+  if (type == "arc2"){
+    if (class(mapping)[1] == "GRanges"){
+      po       <- as.integer((start(mapping)+end(mapping))/2+0.5);
+      dat.in   <- cbind(as.character(seqnames(mapping)),
+                        po, names(mapping), mcols(mapping));   
+    } else {
+      dat.in   <- mapping;
+    }
+    dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    
+    if (!is.null(col)){
+      colors <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];    
+      col.i  <- 0; 
+    }
+    #
+    dat.in[dat.in[,1]==23,1] <- "X";
+    dat.in[dat.in[,1]==24,1] <- "Y";
+    
+    # data set for the chromosome
+    for (chr.i in 1:chr.num){
+      chr.s <- chr.po[chr.i,1];
+      chr.s <- gsub("chr","",chr.s);      
+      dat   <- subset(dat.in, dat.in[,1]==chr.s);
+      dat   <- dat[order(as.numeric(dat[,2])),];
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      # background line
+      if (B){
+        draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      } else {
+        draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=1);
+      }
+    }
+    ## 
+    my.R1 <- R + W/10;
+    my.R2 <- R + W - W/6;
+    my.Rm <- (my.R1 + my.R2)/2;
+    
+    for (i in 1:nrow(dat.in)){
+      col.i <- col.i + 1;
+      col   <- colors[col.i];
+      chr.i <- which(chr.po[,1]==dat.in[i,1]);
+      v1 <- as.numeric(chr.po[chr.i,2]);
+      v2 <- as.numeric(chr.po[chr.i,3]);
+      v3 <- as.numeric(chr.po[chr.i,6]);
+      v4 <- as.numeric(chr.po[chr.i,7]);
+      
+      w1 <- scale.v(as.numeric(dat.in[i,2]), v1, v2, v3, v4);
+      w2 <- scale.v(as.numeric(dat.in[i,3]), v1, v2, v3, v4);
+      
+      draw.arc.s(xc, yc, my.Rm, w1, w2, col=col, lwd=lwd)
+    }
+    
+    if (scale){
+      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+    }
+  }
+  ### end arc2
+  
   ### ml2
   if (type == "ml2"){
     if (class(mapping)[1] == "GRanges"){
@@ -1488,7 +2185,6 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     ## for the matrix colors
     num.col <- ncol(dat.m);
     num.row <- nrow(dat.m);
-
 
     if (cutoff == "n"){
       if (length(col) == num.col){
@@ -1886,7 +2582,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
 
       w2 <- scale.v(as.numeric(po2), v1, v2, v3, v4);
       
-      draw.arc.pg (xc, yc, w1, w2, r1, r2, col=the.col1, border=the.col2);
+      draw.arc.pg (xc, yc, w1, w2, r1, r2, col=the.col1, border=the.col2, lwd=lwd);
   }
   ### end highlight
   ### end type  ################
@@ -1944,7 +2640,7 @@ perm_list <- function (n, r, v = 1:n){
     return(X);
 } 
 
-###
+### draw.link
 draw.link <- function(xc, yc, r, w1, w2, col=col, lwd=lwd) {
     # for translocation
     w3  <- (w1+w2)/2;
@@ -1959,6 +2655,25 @@ draw.link <- function(xc, yc, r, w1, w2, col=col, lwd=lwd) {
     y <- c(y0,yc,yc,y1);
     points(bezierCurve(x,y,60), type="l", col=col, lwd=lwd, lend="butt")
 }
+
+### draw.link2
+draw.link2 <- function(xc, yc, r, w1, w2, col=col, lwd=lwd) {
+  # for translocation
+  w3  <- (w1+w2)/2;
+  w1  <- w1/360*2*pi;
+  w2  <- w2/360*2*pi;
+  w3  <- w3/360*2*pi;
+  x2  <- xc+r/2*cos(w3);
+  y2  <- yc-r/2*sin(w3);
+  x0  <- xc+r*cos(w1);
+  y0  <- yc-r*sin(w1);
+  x1  <- xc+r*cos(w2);
+  y1  <- yc-r*sin(w2);
+  x <- c(x0, x2, x2, x1);
+  y <- c(y0, y2, y2, y1);
+  points(bezierCurve(x,y,60), type="l", col=col, lwd=lwd, lend="butt")
+}
+### 
 
 ###
 draw.link.pg <- function(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=col, lwd=lwd) {
@@ -2018,7 +2733,7 @@ draw.link.pg <- function(xc, yc, r, w1.1, w1.2, w2.1, w2.2, col=col, lwd=lwd) {
 
     polygon(c(bc1$x, fan.2.x, rev(bc2$x), rev(fan.1.x)), 
             c(bc1$y, fan.2.y, rev(bc2$y), rev(fan.1.y)), 
-            fillOddEven=T, border=col, col=col); 
+            fillOddEven=TRUE, border=col, col=col, lwd=lwd); 
 }
 
 ###
@@ -2174,7 +2889,7 @@ draw.arc.pg <- function (xc, yc,
   fan.o.y <- yc - sin(ang.seq) * r2;
 
   polygon(c(rev(fan.i.x), fan.o.x ), c(rev(fan.i.y), fan.o.y), 
-    fillOddEven=T, border=border, col=col, lwd=lwd, lend=1)
+    fillOddEven=TRUE, border=border, col=col, lwd=lwd, lend=1)
   
 }
 
@@ -2209,13 +2924,13 @@ draw.arc.s <- function (xc, yc, r, w1, w2, col="lightblue", lwd=1, lend=1){
 
 setGeneric("segAnglePo", function(seg.dat=seg.dat, seg=seg){standardGeneric("segAnglePo")})
 
-setMethod("segAnglePo",  "data.frame", function(seg.dat=seg.dat, seg=seg){
+setMethod("segAnglePo", "data.frame", function(seg.dat=seg.dat, seg=seg){
 	  ## 
 	  seg.dat  <- seg.dat;
 	 .segAnglePo(seg.dat=seg.dat, seg=seg);
 })
 
-setMethod("segAnglePo",  "GRanges", function(seg.dat=seg.dat){
+setMethod("segAnglePo", "GRanges", function(seg.dat=seg.dat){
 	  ## 
 	  seg.dat  <- cbind(as.character(seqnames(seg.dat)), start(seg.dat), end(seg.dat), names(seg.dat), as.character(strand(seg.dat)));
 	  colnames(seg.dat) <- c("seg.name","seg.Start","seg.End","name","gieStain");

@@ -3,11 +3,11 @@
 \alias{UCSC.hg18}
 \docType{data}
 \title{
- human hg18 mapping reference by UCSC cytogenetics table
+ human hg18 circumference coordinates
 }
 \description{
- This data set is the human hg18 mapping reference by UCSC cytogenetics table.
- It was genereted by hg18.chr data set using seg.angle.po function.
+ Human hg18 circumference coordinates (angles) are calculated from hg18 chromosome 
+ size data using the seqAnglPo function. The chromosome size data stored in UCSC.hg18.chr.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

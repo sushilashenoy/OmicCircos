@@ -3,10 +3,10 @@
 \alias{UCSC.hg19.chr}
 \docType{data}
 \title{
- human hg19 cytogenetics table from UCSC Genome Browser
+ human hg19 segment data
 }
 \description{
- This data set is the human hg19 cytogenetics data by UCSC.
+ Human hg19 chromome size and binding data obtained from UCSC Genome Browser cytogenetics table.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

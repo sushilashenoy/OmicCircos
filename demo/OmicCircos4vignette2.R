@@ -1,16 +1,16 @@
 rm(list=ls());
-options(stringsAsFactors = FALSE);
-library(OmicCircos);
 
+library(OmicCircos);
+options(stringsAsFactors = FALSE);
 set.seed(1234);
 
-## initial
+## initial values for simulation data 
 seg.num     <- 10;
 ind.num     <- 20;
 seg.po      <- c(20:50);
 link.num    <- 10;
-link.pg.num <- 10;
-
+link.pg.num <- 4;
+## output simulation data
 sim.out <- sim.circos(seg=seg.num, po=seg.po, ind=ind.num, link=link.num, 
   link.pg=link.pg.num);
 
@@ -37,8 +37,9 @@ circos(R=280, cir=db, W=40, mapping=seg.v, col.v=8, type="ms",  B=TRUE, col=colo
 circos(R=240, cir=db, W=40, mapping=seg.v, col.v=3, type="h",  B=FALSE,  col=colors[2], lwd=0.1);
 circos(R=200, cir=db, W=40, mapping=seg.v, col.v=3, type="s", B=TRUE, col=colors, lwd=0.1);
 circos(R=160, cir=db, W=40, mapping=seg.v, col.v=3, type="b", B=FALSE, col=colors, lwd=0.1);
-circos(R=150, cir=db, W=40, mapping=link.v, type="link", lwd=2, col=colors);
-circos(R=150, cir=db, W=40, mapping=link.pg.v, type="link.pg", lwd=2, col=colors);
+circos(R=150, cir=db, W=40, mapping=link.v, type="link", lwd=2, col=colors[c(1,7)]);
+circos(R=150, cir=db, W=40, mapping=link.pg.v, type="link.pg", lwd=2, col=sample(colors,link.pg.num));
 
 dev.off()
 
+## detach(package:OmicCircos, unload=TRUE)

@@ -6,7 +6,7 @@
  sub copy number data of TCGA Breast Cancer 
 }
 \description{
- This data set is the sub DNA copy number data of TCGA Breast Cancer.
+ Examples of TCGA Breast Cancer DNA copy number data from 500 genes and 60 samples.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

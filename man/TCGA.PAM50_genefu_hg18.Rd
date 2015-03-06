@@ -3,10 +3,10 @@
 \alias{TCGA.PAM50_genefu_hg18}
 \docType{data}
 \title{
- PAM50 gene list (hg18) 
+ BRCA PAM50 gene list (hg18) 
 }
 \description{
- This data set is the PAM 50 gene list (hg18).
+ Breast cancer PAM 50 gene list (hg18).
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

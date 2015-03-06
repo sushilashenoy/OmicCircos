@@ -1,21 +1,79 @@
 rm(list=ls());
-options(stringsAsFactors = FALSE);
+
 library(OmicCircos);
+options(stringsAsFactors = FALSE);
 
-data(UCSC.hs_cyto_mm);
-data(UCSC.hs_cyto_mac);
+data("TCGA.BC.fus");
+data("TCGA.BC.cnv.2k.60");
+data("TCGA.BC.gene.exp.2k.60");
+data("TCGA.BC.sample60");
 
-###############################################################
-pdffile <- "OmicCircos4vignette8.pdf";
-pdf(pdffile, 8, 8);
-par(mar=c(2, 2, 2, 2));
+## gene expression data for PCA
+exp.m <- TCGA.BC.gene.exp.2k.60[,c(4:ncol(TCGA.BC.gene.exp.2k.60))];
 
-plot(c(1,800), c(1,800), type="n", axes=FALSE, xlab="", ylab="", main="hs-mm");
-circos(R=380, cir="hg19.mm10", type="chr",  W=4, scale=TRUE);
-circos(R=360, cir="hg19.mm10", W=50, mapping=UCSC.hs_cyto_mm, type="link.pg", lwd=2);
+cnv   <- TCGA.BC.cnv.2k.60;
 
-plot(c(1,800), c(1,800), type="n", axes=FALSE, xlab="", ylab="", main="hs-mac");
-circos(R=380, cir="hg19.mac3", type="chr",  W=4, scale=TRUE);
-circos(R=360, cir="hg19.mac3", W=50, mapping=UCSC.hs_cyto_mac, type="link.pg", lwd=2);
+## PCA
+type.n  <- unique(TCGA.BC.sample60[,2]);
+colors  <- rainbow(length(type.n), alpha=0.5);
 
-dev.off();
+pca.col <- rep(NA, nrow(TCGA.BC.sample60));
+for (i in 1:length(type.n)){
+  n   <- type.n[i];
+  n.i <- which(TCGA.BC.sample60[,2] == n);
+  n.n <- TCGA.BC.sample60[n.i,1];
+  g.i <- which(colnames(exp.m) %in% n.n);
+  pca.col[g.i] <- colors[i];
+}
+
+exp.m   <- na.omit(exp.m);
+pca.out <- prcomp(t(exp.m), scale = TRUE);
+
+## subtype cnv
+cnv.i <- c();
+for (i in 1:length(type.n)){
+  n     <- type.n[i];
+  n.i   <- which(TCGA.BC.sample60[,2] == n);
+  n.n   <- TCGA.BC.sample60[n.i,1];
+  cnv.i <- which(colnames(cnv) %in% n.n);
+}
+
+## main
+pdf("OmicCircos4vignette8.pdf", 8,8);
+par(mar=c(5, 5, 5, 5));
+
+plot(c(1,800), c(1,800), type="n", axes=FALSE, xlab="", ylab="", main="");
+
+legend(680,800, c("Basal","Her2","LumA","LumB"), pch=19, col=colors[c(2,4,1,3)], cex=0.5, 
+     title ="Gene Expression (PCA)", box.col="white");
+
+legend(5,800, c("1 Basal", "2 Her2", "3 LumA", "4 LumB", "(center)"), cex=0.5, 
+     title ="CNV (OmicCircos)", box.col="white");
+
+circos(xc=400, yc=400, R=390, cir="hg18", W=4,  type="chr", print.chr.lab=TRUE, scale=TRUE);
+R.v <- 330;
+for (i in 1:length(type.n)){
+  n     <- type.n[i];
+  n.i   <- which(TCGA.BC.sample60[,2] == n);
+  n.n   <- TCGA.BC.sample60[n.i,1];
+  cnv.i <- which(colnames(cnv) %in% n.n);
+  cnv.v <- cnv[,cnv.i];
+  cnv.v[cnv.v > 2]  <- 2;
+  cnv.v[cnv.v < -2] <- -2;
+  cnv.m <- cbind(cnv[,c(1:3)], cnv.v);
+  if (i%%2==1){
+    circos(xc=400, yc=400, R=R.v, cir="hg18", W=60, mapping=cnv.m, col.v=4,  
+           type="ml3", B=TRUE, lwd=1, cutoff=0, scale=TRUE);
+  } else {
+    circos(xc=400, yc=400, R=R.v, cir="hg18", W=60, mapping=cnv.m, col.v=4,  
+           type="ml3", B=FALSE, lwd=1, cutoff=0, scale=TRUE);
+  }
+  R.v <- R.v - 60;
+}
+
+points(pca.out$x[,1]*6+410, pca.out$x[,2]*6+400, pch=19, col=pca.col, cex=2);
+
+dev.off() 
+
+## detach(package:OmicCircos, unload=TRUE)
+

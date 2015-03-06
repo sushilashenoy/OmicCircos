@@ -1,6 +1,7 @@
 rm(list=ls());
-options(stringsAsFactors = FALSE);
+
 library(OmicCircos);
+options(stringsAsFactors = FALSE);
 
 data("TCGA.PAM50_genefu_hg18");
 data("TCGA.BC.fus");
@@ -70,5 +71,5 @@ circos(R=140, cir="hg18", W=80,  mapping=pvalue,   col.v=4,    type="l",   B=TRU
 
 dev.off()
 
-
+## detach(package:OmicCircos, unload=TRUE)
 

@@ -34,6 +34,6 @@
  Chunhua Yan <yanch@mail.nih.gov>
 }
 \references{
-  OmicCircus: an R package for simple and circular visualization of omic data
+  OmicCircos: an R package for simple and circular visualization of omic data. Cancer Inform. 2014 Jan 16;13:13-20. doi: 10.4137/CIN.S13495. eCollection 2014. PMID: 24526832 [PubMed] PMCID: PMC3921174
 }
 

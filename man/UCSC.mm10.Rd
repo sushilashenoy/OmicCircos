@@ -3,11 +3,11 @@
 \alias{UCSC.mm10}
 \docType{data}
 \title{
- mouse mm10 mapping reference by UCSC cytogenetics table 
+ mouse mm10 circumference coordinates
 }
 \description{
- This data set is the mouse mm10 mapping reference by UCSC cytogenetics table.
- It was genereted by mm10.chr data set using seg.angle.po function.
+ Mouse mm10 circumference coordinates (angles) are calculated from mm10 chromosome 
+ size data using the seqAnglPo function. The mouse chromosome size data stored in UCSC.mm10.chr.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

@@ -3,10 +3,10 @@
 \alias{TCGA.BC.fus}
 \docType{data}
 \title{
- gene fusion (partly) of TCGA Breast Cancer 
+ TCGA Breast Cancer gene fusion data.
 }
 \description{
- This data set is the gene fusion data of TCGA Breast Cancer.
+ Examples of TCGA Breast Cancer gene fusion data from 18 fusion proteins
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

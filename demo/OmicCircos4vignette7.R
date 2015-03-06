@@ -1,6 +1,7 @@
 rm(list=ls());
-options(stringsAsFactors = FALSE);
+
 library(OmicCircos);
+options(stringsAsFactors = FALSE);
 
 data("TCGA.BC.fus");
 data("TCGA.BC.cnv.2k.60");
@@ -41,16 +42,13 @@ for (i in 1:length(type.n)){
 pdf("OmicCircos4vignette7.pdf", 8,8);
 par(mar=c(5, 5, 5, 5));
 
-plot(c(1,800), c(1,800), type="n", axes=FALSE, xlab="", ylab="", main="");
-
-legend(680,800, c("Basal","Her2","LumA","LumB"), pch=19, col=colors[c(2,4,1,3)], cex=0.5, 
+plot(pca.out$x[,1]*8, pca.out$x[,2]*8, pch=19, col=pca.col, main="",  
+     cex=2, xlab="PC1", ylab="PC2", ylim=c(-200, 460), xlim=c(-200,460));
+legend(200,0, c("Basal","Her2","LumA","LumB"), pch=19, col=colors[c(2,4,1,3)], cex=1, 
      title ="Gene Expression (PCA)", box.col="white");
 
-legend(5,800, c("1 Basal", "2 Her2", "3 LumA", "4 LumB", "(center)"), cex=0.5, 
-     title ="CNV (OmicCircos)", box.col="white");
-
-circos(xc=400, yc=400, R=390, cir="hg18", W=4,  type="chr", print.chr.lab=TRUE, scale=TRUE);
-R.v <- 330;
+circos(xc=260, yc=260, R=200, cir="hg18", W=4, type="chr", print.chr.lab=TRUE);
+R.v <- 160;
 for (i in 1:length(type.n)){
   n     <- type.n[i];
   n.i   <- which(TCGA.BC.sample60[,2] == n);
@@ -60,13 +58,21 @@ for (i in 1:length(type.n)){
   cnv.v[cnv.v > 2]  <- 2;
   cnv.v[cnv.v < -2] <- -2;
   cnv.m <- cbind(cnv[,c(1:3)], cnv.v);
-  circos(xc=400, yc=400, R=R.v, cir="hg18", W=60, mapping=cnv.m, col.v=4,  type="ml3", B=FALSE, lwd=1, cutoff=0, scale=TRUE);
-  R.v <- R.v - 60;
+  if (i %% 2 == 1){
+    circos(xc=260, yc=260, R=R.v, cir="hg18", W=30, mapping=cnv.m, col.v=4,  
+           type="ml3", B=TRUE, lwd=0.5, cutoff=0);
+  } else {
+    circos(xc=260, yc=260, R=R.v, cir="hg18", W=30, mapping=cnv.m, col.v=4,  
+           type="ml3", B=FALSE, lwd=0.5, cutoff=0);
+  }
+
+  R.v <- R.v - 30;
 }
 
-points(pca.out$x[,1]*3.6+400, pca.out$x[,2]*3.6+400, pch=19, col=pca.col, cex=2);
+legend(-140, 460, c("1 Basal", "2 Her2", "3 LumA", "4 LumB", "(center)"), cex=1, 
+     title ="CNV (OmicCircos)", box.col="white");
 
 dev.off() 
 
-
+## detach(package:OmicCircos, unload=TRUE)
 

@@ -3,10 +3,10 @@
 \alias{UCSC.chr.colors}
 \docType{data}
 \title{
- chromosome banding colors from UCSC Genome Browser 
+ chromosome banding colors
 }
 \description{
- chromosome banding colors from UCSC Genome Browser 
+ Chromosome banding colors from UCSC Genome Browser 
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

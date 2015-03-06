@@ -1,6 +1,7 @@
 rm(list=ls());
-options(stringsAsFactors = FALSE);
+
 library(OmicCircos);
+options(stringsAsFactors = FALSE);
 
 perm_list <- function (n, r, v = 1:n){ 
     if (r == 1) 
@@ -33,6 +34,7 @@ for (i in 1:3){
 }
 
 colors   <- rainbow(seg.num, alpha=0.8);
+color2   <- rainbow(10,      alpha=0.3);
 pdffile  <- "OmicCircos4vignette9.pdf";
 pdf(pdffile, 8, 8);
 par(mar=c(2, 2, 2, 2));
@@ -47,9 +49,11 @@ for (i in 1:nrow(center.i)){
  db        <- segAnglePo(sim.out$seg.f, seg=seg.name);
  link.pg.v <- sim.out$seg.link.pg
  circos(xc=xc, yc=yc, R=90, type="chr", cir=db, col=colors, print.chr.lab=FALSE, W=4);
- circos(xc=xc, yc=yc, R=86, cir=db, mapping=link.pg.v, type="link.pg", lwd=2, col=colors);
+ cols <- sample(color2, nrow(link.pg.v), replace=TRUE);
+ circos(xc=xc, yc=yc, R=86, cir=db, mapping=link.pg.v, type="link.pg", lwd=2, col=cols);
 
 }
 dev.off()
 
+## detach(package:OmicCircos, unload=TRUE)
 

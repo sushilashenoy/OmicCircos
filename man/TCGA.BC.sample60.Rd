@@ -3,10 +3,10 @@
 \alias{TCGA.BC.sample60}
 \docType{data}
 \title{
- sub types of TCGA Breast Cancer sub data set
+ TCGA BRCA Sample names and subtypes
 }
 \description{
- This data set is the sub types of TCGA Breast Cancer sub data set 
+ Names and subtypes of 60 samples for TCGA Breast Cancer expression and copy number data 
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~

@@ -3,10 +3,10 @@
 \alias{TCGA.BC_Her2_cnv_exp}
 \docType{data}
 \title{
- the pvalues of the association between the copy number and gene expression of sub TCGA Breast Cancer data set 
+ TCGA BRCA expression and cnv association
 }
 \description{
- This data set is the pvalues of the association between the copy number and gene expression of sub TCGA Breast Cancer data set.
+ The p-values of associations between the TCGA Breast Cancer copy number and gene expression data.
 }
 \author{
 %%  ~~ possibly secondary sources and usages ~~
