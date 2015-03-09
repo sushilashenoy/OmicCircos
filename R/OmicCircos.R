@@ -594,8 +594,8 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
     dat.in[,1] <- gsub("chr", "", dat.in[,1]);
     
-    dat.in[dat.in[,1]==23,1] <- "X";
-    dat.in[dat.in[,1]==24,1] <- "Y";
+    dat.in[dat.in[,1]==23, 1] <- "X";
+    dat.in[dat.in[,1]==24, 1] <- "Y";
     
     ## colors
     col.i <- 0;
@@ -604,51 +604,33 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       cols  <- rep(col, nrow(dat.in))[c(1:nrow(dat.in))];
     } 
     
+    my.R1 <- R + W/10;
+    my.R2 <- R + W - W/5;
+    
     # data set for the chromosome
-    for (chr.i in 1:chr.num){
-      chr.s <- chr.po[chr.i,1];
-      chr.s <- gsub("chr","",chr.s);      
-      dat   <- subset(dat.in, dat.in[,1]==chr.s);
-      dat   <- dat[order(as.numeric(dat[,2])),];
-      
+    for (i in 1:nrow(dat.in)){
+      chr.s   <- dat.in[i, 1];
+      chr.i   <- which(chr.po[,1]==chr.s);
+
       v1 <- as.numeric(chr.po[chr.i,2]);
       v2 <- as.numeric(chr.po[chr.i,3]);
       v3 <- as.numeric(chr.po[chr.i,6]);
       v4 <- as.numeric(chr.po[chr.i,7]);
       
-      # background line
-      if (B){
-        #draw.arc.pg(xc, yc, v1, v2, r, r+W-5, col=colors()[245]);
+      col.i <- col.i + 1;
+      col   <- cols[col.i];
+      po    <- as.numeric(dat.in[i, 2]);
+      label.n <- as.character(dat.in[i, col.v]);
+      w.to  <- scale.v(po, v1, v2, v3, v4);
+
+      if (side=="in"){
+        draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="in");
       } else {
-        #draw.arc.s(xc, yc, r, v1, v2, col=colors()[245], lwd=lwd);
+        draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="out");
       }
-      
-      # if the chromosome has not dat.
-      if (dim(dat)[1] == 0){
-        next;
-      }   
-      
-      my.R1 <- R + W/10;
-      my.R2 <- R + W - W/5;
-      
-      for (i in 1:nrow(dat)){
-        col.i <- col.i + 1;
-        col   <- cols[col.i];
-        po    <- as.numeric(dat[i, 2]);
-        label.n <- as.character(dat[i, col.v]);
-        w.to  <- scale.v(po, v1, v2, v3, v4);
-        if (side=="in"){
-          draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="in");
-        } else {
-          draw.text.rt(xc, yc, my.R1, w.to, n=label.n, col=col, cex=cex, side="out");
-        }
-      }
-    }
-    if (scale){
-      #do.scale(xc, yc, my.R1, my.R2, R, W-W/5);
     }
   }
-  ### end text
+  ### end label2
   
   ### s2
   if (type == "s2"){
