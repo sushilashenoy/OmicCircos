@@ -325,7 +325,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
     }
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max,  R+W/5, W-2*(W/5));
     }
 
   }
@@ -415,7 +415,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
     }
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
     
   }
@@ -521,7 +521,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
     }
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
   }
   ### end b2
@@ -583,7 +583,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
     }
     if (scale){
-      #do.scale(xc, yc, my.R1, my.R2, R, W-W/5);
+      #do.scale(xc, yc, my.R1, my.R2, R+W/5, W-2*(W/5));
     }
     
   }
@@ -696,7 +696,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       }
     }
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
     
   }
@@ -1076,8 +1076,14 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       if (col.bar.po == "topleft"){
         color.bar(40,700,50,780, v.min=dat.min, v.max=dat.max);
       }
+      if (col.bar.po == "topright"){
+        color.bar(770,700,780,780, v.min=dat.min, v.max=dat.max);
+      }
+      if (col.bar.po == "bottomleft"){
+        color.bar(40, 10, 50, 90, v.min=dat.min, v.max=dat.max);
+      }
       if (col.bar.po == "bottomright"){
-        color.bar(700, 40, 780, 50, v.min=dat.min, v.max=dat.max);
+        color.bar(770, 10, 780, 90, v.min=dat.min, v.max=dat.max);
       }
     }
     if (cluster){
@@ -1188,8 +1194,14 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       if (col.bar.po == "topleft"){
         color.bar(40,700,50,780, v.min=dat.min, v.max=dat.max);
       }
+      if (col.bar.po == "topright"){
+        color.bar(770,700,780,780, v.min=dat.min, v.max=dat.max);
+      }
+      if (col.bar.po == "bottomleft"){
+        color.bar(40, 10, 50, 90, v.min=dat.min, v.max=dat.max);
+      }
       if (col.bar.po == "bottomright"){
-        color.bar(790, 1, 800, 100, v.min=dat.min, v.max=dat.max);
+        color.bar(770, 10, 780, 90, v.min=dat.min, v.max=dat.max);
       }
     }
     if (cluster){
@@ -1287,7 +1299,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1392,7 +1404,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1497,7 +1509,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1596,7 +1608,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1693,7 +1705,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }    
  
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1791,7 +1803,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }    
  
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1883,7 +1895,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }    
  
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -1990,7 +2002,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }     # end the chr/segment
  
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -2062,7 +2074,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
     
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
   }
   ### end arc
@@ -2125,7 +2137,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
     
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
   }
   ### end arc2
@@ -2244,7 +2256,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
 
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -2374,7 +2386,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }     # end the chr/segment
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }       # end the function
@@ -2460,7 +2472,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -2532,7 +2544,7 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
     }
 
     if (scale){
-      do.scale(xc, yc, dat.min, dat.max, R, W-W/5);
+      do.scale(xc, yc, dat.min, dat.max, R+W/5, W-2*(W/5));
     }
 
   }
@@ -3177,9 +3189,9 @@ do.scale <- function(xc=xc, yc=yc, dat.min=dat.min, dat.max=dat.max,
   dat.m   <- round((dat.min+dat.max)/2, s.n);
   dat.min <- round(dat.min, s.n);
   dat.max <- round(dat.max, s.n);
-  y1      <- yc + R + W/20;
-  y2      <- yc + R + W/20 + W/2;
-  y3      <- yc + R + W/20 + W;
+  y1      <- yc + R ;
+  y2      <- yc + R + W/2;
+  y3      <- yc + R + W;
   x1      <- xc - W/20;
   x2      <- x1 - (W/20)*1.2;
   x3      <- x1 - (W/20)*3;
