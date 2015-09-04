@@ -1138,7 +1138,7 @@ for (i in 1:length(type.n)){
 
 \begin{lstlisting}
 ## PCA is plotting. 
-plot(pca.out$x[,1]*5, pca.out$x[,2]*5, pch=19, col=pca.col, main="",  
+plot(pca.out$x[,1]*10, pca.out$x[,2]*10, pch=19, col=pca.col, main="",  
      cex=2, xlab="PC1", ylab="PC2", ylim=c(-200, 460), xlim=c(-200,460));
 legend(200,0, c("Basal","Her2","LumA","LumB"), pch=19, col=colors[c(2,4,1,3)], cex=1, 
      title ="Gene Expression (PCA)", box.col="white");
@@ -1169,7 +1169,7 @@ legend(-80,460, c("1 Basal", "2 Her2", "3 LumA", "4 LumB", "(center)"), cex=1,
 <<OmicCircos4vignette8, echo=FALSE, fig=TRUE, width=8, height=8>>=
 
 ## PCA is plotting. 
-plot(pca.out$x[,1]*5, pca.out$x[,2]*5, pch=19, col=pca.col, main="",  
+plot(pca.out$x[,1]*10, pca.out$x[,2]*10, pch=19, col=pca.col, main="",  
      cex=2, xlab="PC1", ylab="PC2", ylim=c(-200, 460), xlim=c(-200,460));
 legend(200,0, c("Basal","Her2","LumA","LumB"), pch=19, col=colors[c(2,4,1,3)], cex=1, 
      title ="Gene Expression (PCA)", box.col="white");
@@ -1236,7 +1236,7 @@ for (i in 1:length(type.n)){
   R.v <- R.v - 60;
 }
 
-points(pca.out$x[,1]*3.6+400, pca.out$x[,2]*3.6+400, pch=19, col=pca.col, cex=2);
+points(pca.out$x[,1]*8+400, pca.out$x[,2]*8+400, pch=19, col=pca.col, cex=2);
 
 \end{lstlisting}
 
@@ -1272,7 +1272,7 @@ for (i in 1:length(type.n)){
   R.v <- R.v - 60;
 }
 
-points(pca.out$x[,1]*3.6+400, pca.out$x[,2]*3.6+400, pch=19, col=pca.col, cex=2);
+points(pca.out$x[,1]*8+400, pca.out$x[,2]*8+400, pch=19, col=pca.col, cex=2);
 
 @
 \end{center}
