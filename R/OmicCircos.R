@@ -2656,8 +2656,18 @@ draw.link <- function(xc, yc, r, w1, w2, col=col, lwd=lwd) {
     y0  <- yc-r*sin(w1);
     x1  <- xc+r*cos(w2);
     y1  <- yc-r*sin(w2);
-    x <- c(x0,xc,xc,x1);
-    y <- c(y0,yc,yc,y1);
+	
+    # Height proportional to linear distance between points
+    xy.dist <- sqrt((x1-x0)^2+(y1-y0)^2);
+    height <- max(0, r-xy.dist);
+        
+    x0oc <- xc+height*cos(w1);
+    x1oc <- xc+height*cos(w2);
+    y0oc <- yc-height*sin(w1);
+    y1oc <- yc-height*sin(w2);
+    
+    x <- c(x0, x0oc, x1oc, x1);
+    y <- c(y0, y0oc, y1oc, y1);
     points(bezierCurve(x,y,60), type="l", col=col, lwd=lwd, lend="butt")
 }
 
