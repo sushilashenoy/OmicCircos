@@ -722,67 +722,93 @@ circos <- function (mapping=mapping, xc=400, yc=400, R=400, W=W,
       cexes <- rep(cex, nrow(dat.in))[c(1:nrow(dat.in))];    
       cex.i <- 0;
     }
-    
     dat.in[,1] <- gsub("chr", "", dat.in[,1]);
+    chr.po[,1] <- gsub("chr", "", chr.po[,1]);
     
-    # data set for the chromosome
-    for (chr.i in 1:chr.num){
-       chr.s <- chr.po[chr.i,1];
-       chr.s <- gsub("chr", "", chr.s);
-       dat   <- subset(dat.in, dat.in[,1]==chr.s);
-   
-       # if the chromosome has not dat.
-       if (dim(dat)[1] == 0){
-         next;
-       }  
-
-      v1 <- as.numeric(chr.po[chr.i,2]);
-      v2 <- as.numeric(chr.po[chr.i,3]);
-      v3 <- as.numeric(chr.po[chr.i,6]);
-      v4 <- as.numeric(chr.po[chr.i,7]);      
-
-      # sort by position
-      dat <- dat[order(dat[,2]),];
-      label.num <- nrow(dat);
-
-      v.angle <- v2-v1;
-      # if the label number > maxlab number then label the fist maxlab
-      maxlab  <- as.integer((v2-v1)*3);
-      if (label.num > maxlab){
-         label.num == maxlab;
-      }
-
-      v.wide  <- v.angle/label.num;
-      gap.len <- 2;
-      if (v.wide > gap.len){
-        v.wide <- gap.len;
-        w.po  <- v1+v.angle/2-(label.num/2)*gap.len;
-      } else {
-      	w.po  <- v1;
-      }
-
-      for (i in 1:label.num){
-        col.i <- col.i + 1;
-        col   <- cols[col.i];
-        cex.i <- cex.i + 1;
-        cex   <- cexes[col.i];
-        label.n <- dat[i,3];
-        po      <- as.numeric(dat[i,2]);
-        w.to    <- scale.v(po, v1, v2, v3, v4);
-        if (side == "in"){             
-           draw.line(xc,  yc, w.to,   r,   r-w/3,          col=col, lwd=lwd);
-           draw.line(xc,  yc, w.po,   r-w+w/3, r-w,        col=col, lwd=lwd);
-           draw.line3(xc, yc, w.to, w.po, r-w/3, r-w+w/3,  col=col, lwd=lwd);                      
-           draw.text.rt(xc, yc, w.po, r=r-w-40, n=label.n, col=col, cex=cex, side="in");
-        } else if (side == "out"){
-           draw.line(xc,  yc, w.to,   r,  r+w/3,           col=col, lwd=lwd);
-           draw.line(xc,  yc, w.po,   r+w-w/3, r+w,        col=col, lwd=lwd);
-           draw.line3(xc, yc, w.to, w.po, r+w/3, r+w-w/3,  col=col, lwd=lwd);                      
-           draw.text.rt(xc, yc, w.po, r=r+w+10, n=label.n, col=col, cex=cex, side="out");
-        }
-        w.po <- w.po + v.wide;
-      }   
+    # Calculate minimum spacing in degrees
+    if ( side=="out" ) {
+      dpl <- deg.per.label <- atan2(par('cxy')[2]*cex, R)/pi*360/2
+    } else {
+      dpl <- deg.per.label <- atan2(par('cxy')[2]*cex, R-W)/pi*360/2
     }
+    message('Reserving ', dpl, ' degrees per label.')
+    
+    # If there are too many labels, get rid of extras
+    max.lab <- floor(360/dpl)
+    if ( max.lab < nrow(dat.in) ) {
+      warning('Too many labels to fit, plotting ', max.lab, ' of ', nrow(dat.in), '.')
+      dat.in <- dat.in[1:max.lab, ]
+    }
+    
+    # Identify positions for every label
+    chr.i <- match(dat.in[, 1], chr.po[, 1])
+    v1 <- as.numeric(chr.po[chr.i,2]); # angle.start
+    v2 <- as.numeric(chr.po[chr.i,3]); # angle.end
+    v3 <- as.numeric(chr.po[chr.i,6]); # seg.start
+    v4 <- as.numeric(chr.po[chr.i,7]); # seg.end  
+    po      <- as.numeric(dat.in[ ,2]);
+    w.to    <- scale.v(po, v1, v2, v3, v4) %% 360;    
+    
+    label.order <- order(w.to)
+    dat.in <- dat.in[label.order, ]
+    w.to <- w.to[label.order]
+    
+    # Initialize label positions
+    w.po <- w.to
+    spaces <- function ( x ) c(diff(x), 360+x[1]-x[length(x)])
+    nl <- length(w.to)
+    
+    # This loop adjusts the position of one label at a time until spacing
+    # requirements or met or we run out of iterations (max 2*number of labels)
+    for ( x in 1:(2*nl) ) {
+      if ( all(ok <- (sp <- spaces(w.po)) - dpl > -0.01) ) break
+      
+      dok <- c(ok[1]-ok[nl], diff(ok))
+      # Find index for first cramped spots with space before
+      didx <- min(which(dok<0))
+      # Find index for last cramped spot with space after
+      uidx <- max((which(dok>0)-2)%%nl+1)
+      
+      if ( sp[didx] < sp[uidx] ) {
+        # Shift label backward
+        i <- didx
+        pi <- (i-2)%%nl+1
+        need <- dpl - sp[i]
+        avail <- sp[pi]*0.95
+        adj <- min(need, avail)
+        w.po[i] <- w.po[i] - adj
+      } else {
+        # Shift label forward
+        i <- uidx
+        ni <- i%%nl+1
+        need <- dpl - sp[i]
+        avail <- sp[ni]*0.95
+        adj <- min(need, avail)
+        w.po[ni] <- w.po[ni] + adj
+      }
+    }
+  
+    # Draw all labels using w.po and w.to as calculated
+    for (i in 1:nrow(dat.in)){
+      col.i <- col.i + 1;
+      col   <- cols[col.i];
+      cex.i <- cex.i + 1;
+      cex   <- cexes[col.i];
+      label.n <- dat.in[i,3];
+      
+      
+      if (side == "in"){             
+        draw.line(xc,  yc, w.to[i],   r,   r-w/3,          col=col, lwd=lwd);
+        draw.line(xc,  yc, w.po[i],   r-w+w/3, r-w,        col=col, lwd=lwd);
+        draw.line3(xc, yc, w.to[i], w.po[i], r-w/3, r-w+w/3,  col=col, lwd=lwd);                      
+        draw.text.rt(xc, yc, w.po[i], r=r-w-40, n=label.n, col=col, cex=cex, side="in");
+      } else if (side == "out"){
+        draw.line(xc,  yc, w.to[i],   r,  r+w/3,           col=col, lwd=lwd);
+        draw.line(xc,  yc, w.po[i],   r+w-w/3, r+w,        col=col, lwd=lwd);
+        draw.line3(xc, yc, w.to[i], w.po[i], r+w/3, r+w-w/3,  col=col, lwd=lwd);                      
+        draw.text.rt(xc, yc, w.po[i], r=r+w+10, n=label.n, col=col, cex=cex, side="out");
+      }
+    }   
   }
   # end label
 
