@@ -2774,23 +2774,12 @@ draw.text.rt <- function(xc, yc, r, w, n, col="black", cex=1, side="out"){
   w     <- w%%360;
   the.o <- w;
 
-  if (w <= 90){
-    #w=0.0219780219780059+0.978021978021979*w;
-  } else if (w > 90 & w <= 180){
-    #w=3.91304347826081+0.978260869565218*w;
-  } else if (w > 180 & w <= 270){
-    #w=3.91304347826091+0.978260869565217*w;
-  } else if (w > 270 & w <= 360){
-    #w=7.82608695652158+0.978260869565218*w;
-  }
 
   the.w <- 360-w;
   w     <- w/360*2*pi;
   x     <- xc+r*cos(w);
   y     <- yc-r*sin(w);
 
-
-  num2  <- 26;
 
   if (side=="out"){
     if (the.w <= 90 ){
@@ -2805,12 +2794,6 @@ draw.text.rt <- function(xc, yc, r, w, n, col="black", cex=1, side="out"){
       the.pos <- 4;
     }
 
-    if (the.pos==2){
-      x <- x+num2;
-    }
-    if (the.pos==4){
-      x <- x-num2;
-    }
   } 
 
   if (side=="in"){
@@ -2826,15 +2809,9 @@ draw.text.rt <- function(xc, yc, r, w, n, col="black", cex=1, side="out"){
       the.pos <- 4;
     }
 
-    if (the.pos==2){
-      x <- x+num2;
-    }
-    if (the.pos==4){
-      x <- x-num2;
-    }
   }
 
-  text(x, y, adj=0, offset=1, labels=n, srt=the.w, 
+  text(x, y, adj=0, offset=0, labels=n, srt=the.w, 
        pos=the.pos, col=col, cex=cex);
 }
 
